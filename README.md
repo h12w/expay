@@ -12,7 +12,10 @@ and delete (DELETE) RESTful operations for payments. ([ref: HTTP Methods](https:
 
 ```bash
 go get h12.io/expay
+
+cd $GOPATH/src/h12.io/expay
 make test
+
 go install h12.io/expay/cmd/expay
 expay -h
 # expay -host [host] -storage [storage]
