@@ -13,16 +13,16 @@ import (
 type (
 	// DB represents one boltdb file supporting multiple buckets
 	DB struct {
-		db *bbolt.DB
+		db *bolt.DB
 	}
 	// Bucket represents a boltdb bucket that satisifies expay.DB interface
 	Bucket struct {
 		name string
-		db   *bbolt.DB
+		db   *bolt.DB
 	}
 	iter struct {
-		tx     *bbolt.Tx
-		cursor *bbolt.Cursor
+		tx     *bolt.Tx
+		cursor *bolt.Cursor
 		key    []byte
 		value  []byte
 	}
@@ -30,7 +30,7 @@ type (
 
 // New creates or opens a boltdb file
 func New(filename string) (*DB, error) {
-	db, err := bbolt.Open(filename, 0666, nil)
+	db, err := bolt.Open(filename, 0666, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (b *Bucket) Create(v interface{}) (id string, err error) {
 	if err != nil {
 		return "", err
 	}
-	err = b.db.Update(func(tx *bbolt.Tx) error {
+	err = b.db.Update(func(tx *bolt.Tx) error {
 		bucket, err := tx.CreateBucketIfNotExists([]byte(b.name))
 		if err != nil {
 			return err
@@ -81,7 +81,7 @@ func (b *Bucket) Get(id string, v interface{}) error {
 		return err
 	}
 	var value []byte
-	err = b.db.View(func(tx *bbolt.Tx) error {
+	err = b.db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(b.name))
 		if bucket == nil {
 			return expay.ErrNotFound
@@ -108,7 +108,7 @@ func (b *Bucket) Update(id string, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	return b.db.Update(func(tx *bbolt.Tx) error {
+	return b.db.Update(func(tx *bolt.Tx) error {
 		bucket, err := tx.CreateBucketIfNotExists([]byte(b.name))
 		if err != nil {
 			return err
@@ -123,7 +123,7 @@ func (b *Bucket) Delete(id string) error {
 	if err != nil {
 		return err
 	}
-	return b.db.Update(func(tx *bbolt.Tx) error {
+	return b.db.Update(func(tx *bolt.Tx) error {
 		bucket, err := tx.CreateBucketIfNotExists([]byte(b.name))
 		if err != nil {
 			return err
